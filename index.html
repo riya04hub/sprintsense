@@ -952,10 +952,10 @@
             <li><span>👤</span> Neil Lewis</li>
             <li><span>👤</span> Om Pachigar</li>
           <li><span>🏫</span> Jamnabai Narsee International School</li>
-          <li><span>✉️</span> riya.asthana@jnis.ac.in</li>
-            <li><span>✉️</span> saishaa.patel@jnis.ac.in</li>
-            <li><span>✉️</span> neil.lewis@jnis.ac.in</li>
-            <li><span>✉️</span> om.pachigar@jnis.ac.in</li>
+          <li><span>✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c7b5aebea6e9a6b4b3afa6a9a687ada9aeb4e9a6a4e9aea9">[email&#160;protected]</a></li>
+            <li><span>✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="afdccec6dcc7cece81dfcedbcac3efc5c1c6dc81cecc81c6c1">[email&#160;protected]</a></li>
+            <li><span>✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d8b6bdb1b4f6b4bdafb1ab98b2b6b1abf6b9bbf6b1b6">[email&#160;protected]</a></li>
+            <li><span>✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d0200431d0c0e05040a0c1f2d0703041e430c0e430403">[email&#160;protected]</a></li>
           <li><span>🔬</span> Engineering Prototype</li>
         </ul>
       </div>
@@ -968,7 +968,7 @@
 </footer>
 
 <!-- ─── JAVASCRIPT ─── -->
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     let port;
     let reader;
   // ─── State ───
@@ -1138,7 +1138,7 @@ let sessionHistory = JSON.parse(localStorage.getItem('sprintSessions')) || [];
 
   if (isConnected && port.writable) {
     const writer = port.writable.getWriter();
-    await writer.write(new TextEncoder().encode(`THRESH:${val}\n`));
+    await writer.write(new TextEncoder().encode(`SET_THRESHOLD:${val}\n`));
     writer.releaseLock();
     logLine('Threshold sent to device', 'success');
   } else {
@@ -1333,14 +1333,24 @@ function parseData(data) {
   buffer = lines.pop(); // keep incomplete line
 
   lines.forEach(line => {
-    if (line.includes("CONTACT_TIME")) {
-      const match = line.match(/CONTACT_TIME:(\d+)/);
+    line = line.trim();
+    if (!line) return;
 
+    if (line === "BEGIN_UPLOAD") {
+      logLine('Receiving stored session data from device...', 'warn');
+    } else if (line === "END_UPLOAD") {
+      logLine('Stored data upload complete. Device memory cleared.', 'success');
+    } else if (line.startsWith("THRESHOLD_UPDATED:")) {
+      const val = line.split(':')[1];
+      logLine('Device confirmed threshold: ' + val + ' ms', 'success');
+    } else if (line === "MOTOR_TRIGGERED") {
+      logLine('Vibration triggered — contact time exceeded threshold!', 'error');
+    } else if (line.includes("CONTACT_TIME")) {
+      const match = line.match(/CONTACT_TIME:(\d+)/);
       if (!match) {
-        logLine("Invalid data: " + line, "error");
+        logLine("Unrecognised data: " + line, "error");
         return;
       }
-
       const num = parseInt(match[1]);
       ingestData(num);
     }
@@ -1349,19 +1359,16 @@ function parseData(data) {
 
   // ─── Scroll Reveal ───
   const reveals = document.querySelectorAll('.reveal');
-  const ro = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  reveals.forEach(el => ro.observe(el));
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
 
-  // ─── Navbar scroll ───
   window.addEventListener('scroll', () => {
-    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
   });
-
-  // ─── Initial log ───
-  logLine('SprintSense UI loaded successfully.', 'success');
-  logLine('Connect to device or run simulation to begin.', '');
 </script>
 </body>
 </html>
