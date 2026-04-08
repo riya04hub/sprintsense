@@ -558,6 +558,8 @@
     <li><a href="#control">Control</a></li>
     <li><a href="#graph">Live Graph</a></li>
     <li><a href="#insights">Insights</a></li>
+    <li><a href="#sessions">Sessions</a></li>
+    <li><a href="#coach">AI Coach</a></li>
   </ul>
   <a href="#control" class="nav-cta">Launch Panel</a>
 </nav>
@@ -920,6 +922,78 @@
 -->
 
 <!-- ─── FOOTER ─── -->
+
+<div class="divider"></div>
+
+<!-- ─── SESSION HISTORY ─── -->
+<section id="sessions" style="background:var(--bg2)">
+  <div class="container">
+    <div class="reveal" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div>
+        <div class="tag">History</div>
+        <h2 class="sec-title">Past 10 Sessions</h2>
+        <p class="sec-sub">Compare performance across sessions. Sessions auto-save when you clear the graph.</p>
+      </div>
+      <button class="ctrl-btn danger" style="width:auto;padding:10px 22px;margin-top:12px" onclick="clearAllSessions()">🗑 Clear All Sessions</button>
+    </div>
+    <div id="sessionsGrid" style="margin-top:40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+      <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--muted);font-size:.9rem" id="noSessionsMsg">No saved sessions yet. Complete a run and click Clear to save it.</div>
+    </div>
+    <!-- Comparison chart shown when ≥2 sessions exist -->
+    <div id="compareBlock" style="display:none;margin-top:40px">
+      <div class="chart-card">
+        <div class="chart-toolbar">
+          <span class="chart-title">Session Comparison — Average Contact Time (ms)</span>
+        </div>
+        <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── AI COACH ─── -->
+<section id="coach" style="background:var(--bg)">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="tag" style="justify-content:center">AI Coach</div>
+      <h2 class="sec-title">Sprint Performance Coach</h2>
+      <p class="sec-sub" style="margin:12px auto 0">Ask for feedback on your contact times, form advice, or session comparisons. Powered by Claude AI.</p>
+    </div>
+    <div class="reveal reveal-d1" style="margin-top:40px;background:rgba(255,255,255,0.025);border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden">
+      <div style="padding:20px 24px;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--card-border);display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1.1rem">🤖</div>
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;font-size:.95rem">SprintSense AI Coach</div>
+          <div style="font-size:.72rem;color:var(--muted)">Powered by Claude · Free</div>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:.72rem;color:#34d399">
+          <div style="width:7px;height:7px;border-radius:50%;background:#34d399"></div>Online
+        </div>
+      </div>
+      <div id="chatMessages" style="height:360px;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0">🤖</div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid var(--card-border);border-radius:4px 14px 14px 14px;padding:12px 16px;font-size:.87rem;color:rgba(255,255,255,0.8);line-height:1.6;max-width:80%">
+            Hey! I'm your SprintSense AI Coach. I can analyse your contact time data, compare sessions, and give you running form advice. Try asking me something like <em>"How's my form looking?"</em> or <em>"Compare my last 3 sessions"</em>.
+          </div>
+        </div>
+      </div>
+      <div style="padding:16px 24px;border-top:1px solid var(--card-border);display:flex;gap:12px">
+        <input type="text" id="chatInput" placeholder="Ask about your sprint data, form, or technique..." style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);border-radius:12px;padding:12px 16px;color:#fff;font-family:'Space Grotesk',monospace;font-size:.88rem;font-weight:500;outline:none;transition:border-color .2s" onkeydown="if(event.key==='Enter')sendChat()" onfocus="this.style.borderColor='rgba(0,229,255,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"/>
+        <button onclick="sendChat()" style="background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;padding:12px 20px;color:#fff;font-weight:700;font-size:.88rem;cursor:pointer;white-space:nowrap;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Send ↑</button>
+      </div>
+      <div style="padding:10px 24px 16px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="chart-btn" onclick="quickAsk('How is my sprint form looking based on my contact times?')">📊 Analyse my form</button>
+        <button class="chart-btn" onclick="quickAsk('Compare my last sessions and tell me if I am improving.')">📈 Am I improving?</button>
+        <button class="chart-btn" onclick="quickAsk('What contact time should elite sprinters aim for and what drills can help me get there?')">🏃 Elite targets</button>
+        <button class="chart-btn" onclick="quickAsk('Give me specific drills to reduce my ground contact time.')">⚡ Reduce contact time</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="footer-inner">
     <div class="footer-top">
@@ -941,6 +1015,8 @@
           <li><a href="#control">Control Panel</a></li>
           <li><a href="#graph">Live Graph</a></li>
           <li><a href="#insights">Insights</a></li>
+          <li><a href="#sessions">Sessions</a></li>
+          <li><a href="#coach">AI Coach</a></li>
 <!--          <li><a href="#demo">Demo</a></li>-->
         </ul>
       </div>
@@ -952,10 +1028,10 @@
             <li><span>👤</span> Neil Lewis</li>
             <li><span>👤</span> Om Pachigar</li>
           <li><span>🏫</span> Jamnabai Narsee International School</li>
-          <li><span>✉️</span> riya.asthana@jnis.ac.in</li>
-            <li><span>✉️</span> saishaa.patel@jnis.ac.in</li>
-            <li><span>✉️</span> neil.lewis@jnis.ac.in</li>
-            <li><span>✉️</span> om.pachigar@jnis.ac.in</li>
+          <li><span>✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c7b5aebea6e9a6b4b3afa6a9a687ada9aeb4e9a6a4e9aea9">[email&#160;protected]</a></li>
+            <li><span>✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="afdccec6dcc7cece81dfcedbcac3efc5c1c6dc81cecc81c6c1">[email&#160;protected]</a></li>
+            <li><span>✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d8b6bdb1b4f6b4bdafb1ab98b2b6b1abf6b9bbf6b1b6">[email&#160;protected]</a></li>
+            <li><span>✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d0200431d0c0e05040a0c1f2d0703041e430c0e430403">[email&#160;protected]</a></li>
           <li><span>🔬</span> Engineering Prototype</li>
         </ul>
       </div>
@@ -1082,6 +1158,16 @@ let sessionHistory = JSON.parse(localStorage.getItem('sprintSessions')) || [];
     document.getElementById('ovStatus').style.color = '#34d399';
 
     readSerial();
+
+    // Give Arduino 800ms to settle then request any stored offline data
+    setTimeout(async () => {
+      if (isConnected && port && port.writable) {
+        const w = port.writable.getWriter();
+        await w.write(new TextEncoder().encode('REQUEST_DATA\n'));
+        w.releaseLock();
+        logLine('Requesting stored offline data from device...', 'warn');
+      }
+    }, 800);
 
   } catch (err) {
     logLine('Connection failed: ' + err, 'error');
@@ -1241,11 +1327,13 @@ let sessionHistory = JSON.parse(localStorage.getItem('sprintSessions')) || [];
     sessionHistory.push({
       date: new Date().toLocaleString(),
       data: [...allData],
-      avg: Math.round(allData.reduce((a,b)=>a+b,0)/allData.length)
+      avg: Math.round(allData.reduce((a,b)=>a+b,0)/allData.length),
+      threshold: threshold
     });
 
     localStorage.setItem('sprintSessions', JSON.stringify(sessionHistory));
     logLine('Session saved to history.', 'success');
+    renderSessionsGrid();
   }
 
   allData = [];
@@ -1356,6 +1444,235 @@ function parseData(data) {
     }
   });
 }
+
+
+  // ─── Sessions ───────────────────────────────────────────────────────────
+
+  let compareChart = null;
+
+  function renderSessionsGrid() {
+    const grid = document.getElementById('sessionsGrid');
+    const noMsg = document.getElementById('noSessionsMsg');
+    const compareBlock = document.getElementById('compareBlock');
+
+    if (!sessionHistory.length) {
+      noMsg.style.display = 'block';
+      compareBlock.style.display = 'none';
+      return;
+    }
+    noMsg.style.display = 'none';
+
+    // Show last 10, newest first
+    const recent = [...sessionHistory].reverse().slice(0, 10);
+
+    grid.innerHTML = '';
+    recent.forEach((s, idx) => {
+      const realIdx = sessionHistory.length - 1 - idx;
+      const min = Math.min(...s.data);
+      const max = Math.max(...s.data);
+      const above = s.data.filter(v => v > (s.threshold || 180)).length;
+      const pct = s.data.length ? Math.round((above / s.data.length) * 100) : 0;
+      const card = document.createElement('div');
+      card.style.cssText = 'background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:24px;transition:transform .3s,border-color .3s;cursor:default';
+      card.onmouseover = () => { card.style.transform = 'translateY(-4px)'; card.style.borderColor = 'rgba(0,229,255,0.2)'; };
+      card.onmouseout  = () => { card.style.transform = ''; card.style.borderColor = 'rgba(255,255,255,0.07)'; };
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;font-size:.95rem">Session ${sessionHistory.length - idx}</span>
+          <button onclick="deleteSession(${realIdx})" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:8px;padding:4px 10px;font-size:.72rem;font-weight:600;cursor:pointer">Delete</button>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:16px">${s.date}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;text-align:center">
+            <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Avg</div>
+            <div style="font-family:'Space Grotesk',monospace;font-size:1.3rem;font-weight:800;color:var(--accent)">${s.avg} ms</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;text-align:center">
+            <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Steps</div>
+            <div style="font-family:'Space Grotesk',monospace;font-size:1.3rem;font-weight:800;color:#a78bfa">${s.data.length}</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;text-align:center">
+            <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Min</div>
+            <div style="font-family:'Space Grotesk',monospace;font-size:1.3rem;font-weight:800;color:#34d399">${min} ms</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;text-align:center">
+            <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Max</div>
+            <div style="font-family:'Space Grotesk',monospace;font-size:1.3rem;font-weight:800;color:#f87171">${max} ms</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:.72rem;color:var(--muted)">Steps above threshold</span>
+          <span style="font-family:'Space Grotesk',monospace;font-weight:700;color:${pct > 30 ? '#f87171' : '#34d399'}">${above} / ${s.data.length} (${pct}%)</span>
+        </div>
+        <button onclick="loadSessionToGraph(${realIdx})" style="width:100%;margin-top:12px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);color:var(--accent);border-radius:10px;padding:9px;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .2s" onmouseover="this.style.background='rgba(0,229,255,0.15)'" onmouseout="this.style.background='rgba(0,229,255,0.08)'">Load to Graph ↗</button>
+      `;
+      grid.appendChild(card);
+    });
+
+    // Comparison chart
+    if (sessionHistory.length >= 2) {
+      compareBlock.style.display = 'block';
+      renderCompareChart();
+    } else {
+      compareBlock.style.display = 'none';
+    }
+  }
+
+  function renderCompareChart() {
+    const recent = [...sessionHistory].slice(-10);
+    const labels = recent.map((s, i) => 'S' + (sessionHistory.length - recent.length + i + 1));
+    const avgs   = recent.map(s => s.avg);
+    const mins   = recent.map(s => Math.min(...s.data));
+    const maxs   = recent.map(s => Math.max(...s.data));
+
+    if (compareChart) compareChart.destroy();
+    const cctx = document.getElementById('compareChart').getContext('2d');
+    compareChart = new Chart(cctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Avg Contact (ms)', data: avgs, backgroundColor: 'rgba(0,229,255,0.5)', borderColor: '#00e5ff', borderWidth: 1.5, borderRadius: 6 },
+          { label: 'Min Contact (ms)', data: mins, backgroundColor: 'rgba(52,211,153,0.4)', borderColor: '#34d399', borderWidth: 1.5, borderRadius: 6 },
+          { label: 'Max Contact (ms)', data: maxs, backgroundColor: 'rgba(248,113,113,0.35)', borderColor: '#f87171', borderWidth: 1.5, borderRadius: 6 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 400 },
+        plugins: {
+          legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { size: 11 } } },
+          tooltip: { backgroundColor: 'rgba(8,12,20,0.95)', borderColor: 'rgba(0,229,255,0.2)', borderWidth: 1, bodyColor: '#fff', padding: 12, cornerRadius: 10, callbacks: { label: c => c.dataset.label + ': ' + c.raw + ' ms' } }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 } }, border: { color: 'rgba(255,255,255,0.07)' } },
+          y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 }, callback: v => v + ' ms' }, border: { color: 'rgba(255,255,255,0.07)' }, min: 50 }
+        }
+      }
+    });
+  }
+
+  function deleteSession(index) {
+    sessionHistory.splice(index, 1);
+    localStorage.setItem('sprintSessions', JSON.stringify(sessionHistory));
+    renderSessionsGrid();
+    logLine('Session deleted.', 'warn');
+  }
+
+  function clearAllSessions() {
+    if (!sessionHistory.length) { logLine('No sessions to clear.', 'warn'); return; }
+    if (!confirm('Delete all ' + sessionHistory.length + ' saved sessions? This cannot be undone.')) return;
+    sessionHistory = [];
+    localStorage.setItem('sprintSessions', JSON.stringify(sessionHistory));
+    renderSessionsGrid();
+    logLine('All sessions cleared.', 'warn');
+  }
+
+  function loadSessionToGraph(index) {
+    const session = sessionHistory[index];
+    if (!session) return;
+    allData = []; stepNum = 0; stepCount = 0;
+    trendChart.data.labels = [];
+    trendChart.data.datasets.forEach(ds => ds.data = []);
+    trendChart.update();
+    session.data.forEach(val => updateGraph(val));
+    document.getElementById('statSteps').textContent = session.data.length;
+    logLine('Loaded session from ' + session.date, 'success');
+    window.location.hash = '#graph';
+  }
+
+  // Render sessions on load
+  renderSessionsGrid();
+
+  // Also re-render whenever clearGraph() saves a new session — patch clearGraph
+  const _origClearGraph = clearGraph;
+  // (clearGraph already calls renderSessionsGrid via the patched save block)
+
+  // ─── AI Coach ────────────────────────────────────────────────────────────
+
+  let chatHistory = [];
+
+  function buildSystemPrompt() {
+    let ctx = 'You are SprintSense AI Coach, an expert sprint running coach embedded in a wearable sensor dashboard. ';
+    ctx += 'You give practical, encouraging, science-backed advice on sprint mechanics, ground contact time, and running form. ';
+    ctx += 'Keep responses concise and focused — use short paragraphs, not long essays. ';
+    ctx += 'Current threshold set by the athlete: ' + threshold + ' ms. ';
+
+    if (allData.length) {
+      const avg = Math.round(allData.reduce((a,b)=>a+b,0)/allData.length);
+      const min = Math.min(...allData);
+      const max = Math.max(...allData);
+      const above = allData.filter(v=>v>threshold).length;
+      ctx += 'Current live session data — steps: ' + allData.length + ', avg contact: ' + avg + ' ms, min: ' + min + ' ms, max: ' + max + ' ms, steps above threshold: ' + above + ' out of ' + allData.length + '. ';
+    } else {
+      ctx += 'No live session data yet. ';
+    }
+
+    if (sessionHistory.length) {
+      const recent = sessionHistory.slice(-5);
+      ctx += 'Recent saved sessions (oldest to newest): ';
+      recent.forEach((s, i) => {
+        ctx += 'Session ' + (sessionHistory.length - recent.length + i + 1) + ': avg=' + s.avg + 'ms, steps=' + s.data.length + ', date=' + s.date + '. ';
+      });
+    }
+    return ctx;
+  }
+
+  function addChatBubble(role, text, isLoading) {
+    const msgs = document.getElementById('chatMessages');
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;gap:10px;align-items:flex-start' + (role==='user' ? ';flex-direction:row-reverse' : '');
+    const avatar = document.createElement('div');
+    avatar.style.cssText = 'width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;' + (role==='user' ? 'background:rgba(124,58,237,0.4)' : 'background:linear-gradient(135deg,var(--accent),var(--accent2))');
+    avatar.textContent = role === 'user' ? '🏃' : '🤖';
+    const bubble = document.createElement('div');
+    bubble.style.cssText = 'border-radius:' + (role==='user' ? '14px 4px 14px 14px' : '4px 14px 14px 14px') + ';padding:12px 16px;font-size:.87rem;line-height:1.65;max-width:80%;' + (role==='user' ? 'background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.25);color:rgba(255,255,255,0.9)' : 'background:rgba(255,255,255,0.06);border:1px solid var(--card-border);color:rgba(255,255,255,0.85)');
+    bubble.innerHTML = isLoading ? '<span style="opacity:.5">Thinking...</span>' : text.replace(/\n/g,'<br>');
+    wrap.appendChild(avatar);
+    wrap.appendChild(bubble);
+    msgs.appendChild(wrap);
+    msgs.scrollTop = msgs.scrollHeight;
+    return bubble;
+  }
+
+  async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+
+    addChatBubble('user', text);
+    chatHistory.push({ role: 'user', content: text });
+
+    const loadingBubble = addChatBubble('assistant', '', true);
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: buildSystemPrompt(),
+          messages: chatHistory
+        })
+      });
+      const data = await response.json();
+      const reply = data.content && data.content[0] ? data.content[0].text : 'Sorry, I could not get a response.';
+      loadingBubble.innerHTML = reply.replace(/\n/g,'<br>');
+      chatHistory.push({ role: 'assistant', content: reply });
+      // Keep history manageable
+      if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+    } catch(e) {
+      loadingBubble.innerHTML = '<span style="color:#f87171">Connection error. Please try again.</span>';
+    }
+    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+  }
+
+  function quickAsk(question) {
+    document.getElementById('chatInput').value = question;
+    sendChat();
+  }
 
   // ─── Scroll Reveal ───
   const reveals = document.querySelectorAll('.reveal');
